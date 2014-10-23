@@ -6,13 +6,23 @@ Vagrant.configure("2") do |config|
   # options are documented and commented below. For a complete reference,
   # please see the online documentation at vagrantup.com.
 
-  # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "centos64"
-  config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/centos-64-x64-vbox4210.box"
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+  end
 
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  # config.vm.box_url = "http://domain.com/path/to/above.box"
+  if ENV['useproxy'] != "false"
+    if Vagrant.has_plugin?("vagrant-proxyconf")
+      config.proxy.http     = "http://192.168.30.1:3128/"
+      config.proxy.https    = "http://192.168.30.1:3128/"
+      config.proxy.no_proxy = "localhost,127.0.0.1,.example.com"
+    else
+      print "please run command [vagrant plugin install vagrant-proxyconf]."
+      exit 0
+    end
+  end
+
+  # Every Vagrant virtual environment requires a box to build off of.
+  config.vm.box = "centos6.4-x86_64"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
